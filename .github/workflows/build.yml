@@ -1,0 +1,53 @@
+name: Build Rhino-AutoCAD Plugins
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.1
+        
+    - name: Restore Rhino Plugin
+      run: dotnet restore RhinoPlugin/RhinoPlugin.csproj
+      
+    - name: Build Rhino Plugin
+      run: dotnet build RhinoPlugin/RhinoPlugin.csproj --configuration Release --no-restore
+        
+    - name: Upload Rhino Plugin
+      uses: actions/upload-artifact@v3
+      with:
+        name: RhinoExportPlugin
+        path: RhinoPlugin/bin/Release/net48/RhinoExportPlugin.dll
+        
+    - name: Upload Dependencies
+      uses: actions/upload-artifact@v3
+      with:
+        name: Dependencies
+        path: RhinoPlugin/bin/Release/net48/Newtonsoft.Json.dll
+        
+    - name: Create Release Package
+      run: |
+        mkdir ReleasePackage
+        copy RhinoPlugin\bin\Release\net48\*.dll ReleasePackage\
+        echo "Rhino-AutoCAD Sync Plugin - Built on $(Get-Date)" > ReleasePackage\BuildInfo.txt
+        
+    - name: Upload Release Package
+      uses: actions/upload-artifact@v3
+      with:
+        name: PluginPackage
+        path: ReleasePackage/
