@@ -29,13 +29,13 @@ jobs:
       run: dotnet build RhinoPlugin/RhinoPlugin.csproj --configuration Release --no-restore
         
     - name: Upload Rhino Plugin
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: RhinoExportPlugin
         path: RhinoPlugin/bin/Release/net48/RhinoExportPlugin.dll
         
     - name: Upload Dependencies
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Dependencies
         path: RhinoPlugin/bin/Release/net48/Newtonsoft.Json.dll
@@ -47,7 +47,7 @@ jobs:
         echo "Rhino-AutoCAD Sync Plugin - Built on $(Get-Date)" > ReleasePackage\BuildInfo.txt
         
     - name: Upload Release Package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: PluginPackage
         path: ReleasePackage/
